@@ -1,7 +1,7 @@
 #include "triggerbot.h"
 
 
-void triggerBot(){
+void tb::triggerBot(){
     
 }
 
