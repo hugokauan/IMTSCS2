@@ -2,8 +2,6 @@
 
 
 
-
-
 ProcessMemory::ProcessMemory(HANDLE hProcess) {
     if (hProcess == NULL || hProcess == INVALID_HANDLE_VALUE) {
         throw std::invalid_argument("Provided handle is not valid.");

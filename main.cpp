@@ -10,11 +10,13 @@
 #include <io.h>
 #include <fcntl.h>
 
-
+#include "hwidchecks.h"
 #include "ProcessMemory.h" 
 #include "offsets.hpp"
 #include "triggerbot.h"
-#include "hwidchecks.h"
+
+
+HANDLE hijackedHandle;
 
 char getKeyPressed(){
     char kPressed = _getch();
@@ -27,6 +29,7 @@ int toggleKey = VK_XBUTTON2;
 int wmain() {
     processes process;
     patternScanning pc;
+    tb tb;
     bool running = true;
     bool isCheckingAC = true;
     const wchar_t* antiCheats[] = {L"faceit",L"vgk",L"gcsecure"};
@@ -152,7 +155,7 @@ int wmain() {
                             int health = memory.Read<int>(entCtrl + offsets::m_iHealth);
                             if (health <= 0 || health > 100)
                                 continue;
-                            trigger.simMouse(delayMs);
+                            tb.simMouse(delayMs);
                     }
                   
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
