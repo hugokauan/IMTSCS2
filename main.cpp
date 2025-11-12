@@ -23,7 +23,7 @@ char getKeyPressed(){
     return kPressed;
 }
 
-int delayMs;
+int delayMs =0;
 int toggleKey = VK_XBUTTON2;
 
 int wmain() {
@@ -101,13 +101,13 @@ int wmain() {
             uintptr_t dwEntityListScanned = pc.PatternScan(hijackedHandle, (uintptr_t)baseAddress.modBaseAddr, baseAddress.modBaseSize, dwEntityListBytes);
             uintptr_t dwEntityList = pc.ResolveRipRelativeAddress(hijackedHandle, dwEntityListScanned, 3, 7);
            // uintptr_t dwEntityListOffset = dwEntityList - (uintptr_t)baseAddress.modBaseAddr;
-            std::string predictionPattern = "48 8D 05 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 40 53 56 41 54";
+            std::string predictionPattern = "48 8D 05 C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 40 53 56 41 54";
             std::vector<int> predictionBytes = pc.PatternToBytes(predictionPattern);
             uintptr_t predictionScanned = pc.PatternScan(hijackedHandle, (uintptr_t)baseAddress.modBaseAddr, baseAddress.modBaseSize, predictionBytes);
             uintptr_t predictionAddress = pc.ResolveRipRelativeAddress(hijackedHandle, predictionScanned, 3, 7);
 
 
-            std::string offsetPattern = "4C 39 B6 ?? ?? ?? ?? 74 ?? 44 88 BE";
+            std::string offsetPattern = "4C 39 B6 74 ?? 44 88 BE";
             std::vector<int> offsetBytes = pc.PatternToBytes(offsetPattern);
             uintptr_t offsetInstruction = pc.PatternScan(hijackedHandle, (uintptr_t)baseAddress.modBaseAddr, baseAddress.modBaseSize, offsetBytes);
 
@@ -131,31 +131,40 @@ int wmain() {
                     std::wcout << "delay changed to MS: \n" << delayMs << std::endl;
                 }
                     if (GetAsyncKeyState(toggleKey)) {
+                        
                         const auto localPlayerPawn = memory.Read<std::uintptr_t>(dwLocalPlayerPawn);
                         if (!localPlayerPawn) {
-                            //std::wcout << L"couldn`t find localplayerpawn\n";
+                            std::wcout << L"couldn`t find localplayerpawn\n";
                         }
                         int crossId = memory.Read<int>(localPlayerPawn + offsets::m_iIDEntIndex);
+                        std::cout << crossId;
 
                         if (crossId > 0) {
+                            std::cout << "1";
                             const auto entList = memory.Read<std::uintptr_t>(dwEntityList);
                             if (!entList) {
                                 std::wcout << L"couldn`t find entlist\n";
                             }
+                            std::cout << "2";
                             const auto listEntry = memory.Read<uintptr_t>(entList + 0x8 * (crossId >> 9) + 0x10);
                             if (!listEntry)
                                 continue;
+                                std::cout << "3";
                             const auto entCtrl = memory.Read<uintptr_t>(listEntry + 112 * (crossId & 0x1FF));
                             if (!entCtrl)
                                 continue;
+                                std::cout << "4";
                             int entTeam = memory.Read<int>(entCtrl + offsets::m_iTeamNum);
                             int localTeam = memory.Read<int>(localPlayerPawn + offsets::m_iTeamNum);
                             if (entTeam == localTeam)
                                 continue;
+                                std::cout << "5";
                             int health = memory.Read<int>(entCtrl + offsets::m_iHealth);
                             if (health <= 0 || health > 100)
                                 continue;
+                                std::cout << "6";
                             tb.simMouse(delayMs);
+                            std::cout << "shoot";
                     }
                   
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
