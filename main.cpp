@@ -134,10 +134,9 @@ int wmain() {
                         
                         const auto localPlayerPawn = memory.Read<std::uintptr_t>(dwLocalPlayerPawn);
                         if (!localPlayerPawn) {
-                            std::wcout << L"couldn`t find localplayerpawn\n";
+                            //std::wcout << L"couldn`t find localplayerpawn\n";
                         }
                         int crossId = memory.Read<int>(localPlayerPawn + offsets::m_iIDEntIndex);
-                        std::cout << crossId;
 
                         if (crossId > 0) {
                             std::cout << "1";
